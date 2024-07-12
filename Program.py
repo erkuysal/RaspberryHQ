@@ -31,13 +31,50 @@ lcd = I2cLcd(i2c, I2C_ADDR, I2C_NUM_ROWS, I2C_NUM_COLS)
 irPin = 17
 receiver = Pin(irPin, Pin.IN)
 
+# Define the mapping
+ir_command_map = {
+        69 : '1',
+        70 : '2',
+        71 : '3',
+        68 : '4',
+        64 : '5',
+        67 : '6',
+        7  : '7',
+        21 : '8',
+        9  : '9',
+        25 : '0',
+        22 : '*',
+        13 : '#',
+        24 : 'UP',
+        90 : 'RIGHT',
+        8  : 'LEFT',
+        82 : 'DOWN',
+        28 : 'SELECT'
+    }
+
 def callback(IRBit, param1, param2):
-    print(IRBit)
+    command = ir_command_map.get(IRBit, 'Unknown Command')
+    print(f"IRBit: {IRBit} -> Command: {command}")
 
 IR = NEC_8(receiver, callback)
 
+
+# Function to get command from IR bit input
+def get_command(value):
+    return ir_command_map.get(value, 'Unknown Command')
+
+
 # -------------------------------------------------------
 
+def display(text):
+    lcd.clear()
+    lcd.move_to(5,0)
+    lcd.putstr(text)
+    time.sleep(1)
+    
+
+
+# ------------------------ MAIN LOOP -------------------------------
 try:
     while True:
         pass
