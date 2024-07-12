@@ -33,6 +33,7 @@ receiver = Pin(irPin, Pin.IN)
 
 # Define the mapping
 ir_command_map = {
+        -1 : ' ',
         69 : '1',
         70 : '2',
         71 : '3',
@@ -55,26 +56,43 @@ ir_command_map = {
 def callback(IRBit, param1, param2):
     command = ir_command_map.get(IRBit, 'Unknown Command')
     print(f"IRBit: {IRBit} -> Command: {command}")
+    process_command(command)
 
 IR = NEC_8(receiver, callback)
 
 
-# Function to get command from IR bit input
-def get_command(value):
-    return ir_command_map.get(value, 'Unknown Command')
-
 
 # -------------------------------------------------------
 
-def display(text):
+current_index = 0
+menu = ["Timer" , "Option 2", "Option 3"]
+
+
+def display_menu():
     lcd.clear()
-    lcd.move_to(5,0)
-    lcd.putstr(text)
-    time.sleep(1)
+    lcd.putstr(menu[current_index])
     
+
+def process_command(command):
+    global current_index
+    if command == 'UP':
+        current_index = (current_index - 1) % len(menu)
+    elif command == 'DOWN':
+        current_index = (current_index + 1) % len(menu)
+    elif command == 'SELECT':
+        lcd.clear()
+        lcd.putstr(f"Selected: {menu[current_index]}")
+        time.sleep(2)  # Show selection for 2 seconds
+    display_menu()
 
 
 # ------------------------ MAIN LOOP -------------------------------
+
+lcd.clear()
+lcd.putstr('Welcome!')
+time.sleep(2)
+display_menu()
+
 try:
     while True:
         pass
